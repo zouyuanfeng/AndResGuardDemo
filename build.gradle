@@ -1,0 +1,82 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.0.0-alpha9'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+/**
+ * 复制APK
+ */
+def copyApk = {
+    srcFile, name ->
+        def inFile = file(srcFile)
+        def outFile = new File("${gradle.outApk}/${name}")//输出的文件
+        outFile.withOutputStream { os -> inFile.withInputStream { ins -> os << ins } }
+
+}
+/**
+ * 压缩APK
+ */
+def compress = {
+    name ->
+        //减去.apk
+        def path = name.substring(0, name.length() - 4)
+        def guardJarFile = file('./AndResGuard/AndResGuard-cli-1.1.0.jar')
+        def guardConfigFile = file('./AndResGuard/config.xml')
+        def originApkFile = file("./app/${name}")
+        def outputDir = file("./build/${path}")
+        // 开始执行压缩命令
+        def proc = """java -jar ${guardJarFile} ${originApkFile} -config ${guardConfigFile}
+                    -out ${outputDir} -zipalign  ${gradle.sdkDir}/build-tools/23.0.2/zipalign""".execute()
+        proc.waitFor()
+        if (proc.exitValue() == 0) {
+            println "压缩开始:\t\n${proc.in.text}"
+            def preApk = Math.round(originApkFile.length() / 1024*100)/100
+            println "压缩前：${preApk}K"
+            outputDir.eachFile {
+                if (it.name.contains("7zip_aligned")) {
+                    def afterApk = Math.round(it.length() / 1024*100)/100
+                    println "压缩后：${afterApk}K"
+                    copyApk.call(it.getAbsolutePath(), name)
+                }
+            }
+        } else {
+            println "错误日志：\n${proc.err.text}"
+        }
+}
+
+/**
+ * gradlew  compressApp
+ * 对包进行微信资源压缩
+ */
+task compressApp << {
+    //清理build目录，可不加
+//    delete rootProject.buildDir
+    //遍历apk文件
+    new File("./app").eachFile {
+        if (it.name.endsWith(".apk")) {
+            println "**************${it.name}******************"
+            compress.call(it.name)
+            println "********${it.name}压缩完成***********"
+        }
+    }
+    println "压缩完成"
+}

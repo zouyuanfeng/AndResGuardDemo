@@ -1,0 +1,11 @@
+include ':app'
+
+//初始化gradle时调用
+def initGradleEnvironment() {
+    Properties properties=new Properties();
+    File file=new File(rootDir.getAbsolutePath()+"/local.properties")
+    properties.load(file.newDataInputStream())
+    gradle.ext.sdkDir=properties.getProperty("sdk.dir")
+    gradle.ext.outApk=properties.getProperty("out.apk")
+}
+initGradleEnvironment()
