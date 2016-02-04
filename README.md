@@ -1,6 +1,7 @@
 ### 微信资源压缩打包
 
 本工程为新建工程，未修改java代码和资源文件，直接打包后进行微信资源压缩的
+介绍可参考之前写的一个[博客](http://blog.csdn.net/u014300915/article/details/50601940)
 
 #### 安装7z
 ```
@@ -31,5 +32,3 @@ initGradleEnvironment()
 
 #### 调用压缩任务
 ![log](http://itzyf.qiniudn.com/log.png)
-
-最后附上之前写的[博客](http://blog.csdn.net/u014300915/article/details/50601940)
