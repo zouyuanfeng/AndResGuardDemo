@@ -5,9 +5,15 @@
 介绍可参考之前写的一个[博客](http://blog.csdn.net/u014300915/article/details/50601940)
 
 #### 安装7z
+Ubuntu：
 ```
 	$sudo apt-get install p7zip-full
 ```
+windows：
+下载地址：[http://www.7-zip.org/](http://www.7-zip.org/)
+
+在win下7Z的安装后如果没有7za.exe的话，可以把7z.exe复制一份改成7za.exe，并配置环境变量 
+![图](http://img.blog.csdn.net/20160128171057035)
 
 #### 修改local.properties文件
 增加一行：out.apk=/home/zou/app
